@@ -1,0 +1,29 @@
+---
+- name: Provision Servers
+  hosts : all
+  gather_facts: True
+  tasks:
+    - name: Installing Packages on CentOS
+      yum:
+        name: "{{item}}"
+        state: present
+      when : ansible_distribution == "CentOS"
+      loop : 
+        - chrony
+        - wget
+        - git
+        - unzip
+        - zip
+
+    - name: Installing Packages on Ubuntu
+      apt:
+        name: "{{item}}"
+        state: present
+        update_cache: True
+      when: ansible_distribution == "Ubuntu" 
+      loop : 
+        - ntp
+        - wget
+        - git
+        - unzip
+        - zip
