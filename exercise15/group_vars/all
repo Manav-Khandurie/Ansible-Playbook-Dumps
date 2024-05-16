@@ -1,0 +1,7 @@
+dbname : sky
+dbuser : pilot
+dbpass : aircraft
+ntp0 : 0.in.pool.ntp.org
+ntp1 : 1.in.pool.ntp.org
+ntp2 : 2.in.pool.ntp.org
+ntp3 : 3.in.pool.ntp.org

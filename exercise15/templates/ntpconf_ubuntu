@@ -1,0 +1,53 @@
+
+# Specify one or more NTP servers.
+# You can use the default Ubuntu NTP pool servers, which provide reliable time service.
+# These servers are distributed worldwide.
+server "{{ntp0}}" iburst
+server "{{ntp1}}" iburst
+server "{{ntp2}}" iburst
+server "{{ntp3}}" iburst
+
+# Use Ubuntu's ntp server as a fallback.
+server ntp.ubuntu.com
+
+# Use the local clock if no remote servers are available.
+# This is usually not necessary if you have reliable network connectivity.
+# server 127.127.1.0     # local clock
+# fudge 127.127.1.0 stratum 10
+
+# Drift file to record the frequency offset of the local clock.
+driftfile /var/lib/ntp/ntp.drift
+
+# Enable kernel synchronization of the time, if available.
+# This is useful for systems with kernel time discipline support.
+# restrict kernel
+
+# Enable statistics logging.
+# This can help with troubleshooting and analysis.
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+
+# Access control configuration.
+# By default, all queries are denied.
+# Allow queries only from the local host.
+restrict default nomodify notrap nopeer noquery
+restrict 127.0.0.1
+restrict ::1
+
+# Allow LAN machines to query the NTP server (if needed).
+# Replace '192.168.1.0/24' with your LAN subnet.
+# restrict 192.168.1.0 mask 255.255.255.0 nomodify notrap
+
+# Specify file paths for the log and PID files.
+logfile /var/log/ntp.log
+pidfile /var/run/ntpd.pid
+
+# Enable monitoring.
+enable monitor
+
+# Define additional parameters as needed.
+# For example, you can specify how often to poll the servers.
+# minpoll 4
+# maxpoll 10
