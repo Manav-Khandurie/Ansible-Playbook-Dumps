@@ -1,0 +1,31 @@
+---
+- name: Provision Servers
+  hosts : all
+  gather_facts: True
+  tasks:
+    - name: Installing NTP on CentOS
+      yum:
+        name: chrony
+        state: present
+      when : ansible_distribution == "CentOS"
+
+    - name: Installing NTP on Ubuntu
+      apt:
+        name: ntp
+        state: present
+        update_cache: True
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Start NTP on CentOS
+      service:
+        name: chronyd
+        state: started
+        enabled: yes
+      when : ansible_distribution == "CentOS"
+    
+    - name: Start NTP on Ubuntu
+      service:
+        name: ntp
+        state: started
+        enabled: yes
+      when : ansible_distribution == "Ubuntu"
