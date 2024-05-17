@@ -1,0 +1,78 @@
+- name: Provision Servers
+  hosts : all
+  gather_facts: True
+  vars:
+    path : /opt/custom
+  tasks:
+    - name: Installing NTP on CentOS
+      yum:
+        name: chrony
+        state: present
+      when : ansible_distribution == "CentOS"
+
+    - name: Installing NTP on Ubuntu
+      apt:
+        name: ntp
+        state: present
+        update_cache: True
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Start NTP on CentOS
+      service:
+        name: chronyd
+        state: started
+        enabled: yes
+      when : ansible_distribution == "CentOS"
+    
+    - name: Start NTP on Ubuntu
+      service:
+        name: ntp
+        state: started
+        enabled: yes
+      when : ansible_distribution == "Ubuntu"
+    
+    - name: Banner File
+      copy:
+        content: 'THIS SERVER IS MANAGED BY ANSIBLE'
+        dest : /etc/motd
+
+    - name : Templating ntp agent to centos
+      template:
+        src: templates/ntpconf_centos
+        dest : /etc/chrony.conf
+        backup : yes
+      when : ansible_distribution == "CentOS"
+      notify : reStart NTP on CentOS
+
+    - name : Templating ntp agent to Ubuntu
+      template:
+        src: templates/ntpconf_ubuntu
+        dest : /etc/ntp.conf
+        backup : yes
+      when : ansible_distribution == "CentOS"
+      notify : reStart NTP on Ubuntu
+
+    - name : Copy a file
+      copy:
+        src: files/test.txt
+        dest: /tmp/myfile.txt
+
+    - name : Create Folder
+      file:
+        path: "{{path}}"
+        state: directory
+
+  handlers:
+    - name: reStart NTP on CentOS
+      service:
+        name: chronyd
+        state: restarted
+        enabled: yes
+      when : ansible_distribution == "CentOS"
+    
+    - name: reStart NTP on Ubuntu
+      service:
+        name: ntp
+        state: restarted
+        enabled: yes
+      when : ansible_distribution == "Ubuntu"
